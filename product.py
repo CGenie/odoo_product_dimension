@@ -23,6 +23,14 @@ from openerp import api
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    @api.multi
+    def write(self, values):
+        if 'volume' not in values:
+            volume = self.onchange_calculate_volume()
+            if self.volume:
+                values['volume'] = self.volume
+        return super(ProductTemplate, self).write(values)
+
     @api.onchange('length', 'height', 'width', 'dimensional_uom_id')
     def onchange_calculate_volume(self):
         if (not self.length or not self.height or not self.width
